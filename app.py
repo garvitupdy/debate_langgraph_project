@@ -77,16 +77,17 @@ def render_debate_ui(show_tabs=False):
             cols = st.columns(2)
         
         
+        
         if msg["role"] == "pro" and cols:
             with cols[0]:
-                st.markdown(f"<div class='pro-box'><h3>🟦 Pro Agent</h3>{msg['content']}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='pro-box'><h3>🟦 Pro Agent</h3>\n\n{msg['content']}\n\n</div>", unsafe_allow_html=True)
         elif msg["role"] == "con" and cols:
             with cols[1]:
-                st.markdown(f"<div class='con-box'><h3>🟨 Con Agent</h3>{msg['content']}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='con-box'><h3>🟨 Con Agent</h3>\n\n{msg['content']}\n\n</div>", unsafe_allow_html=True)
                 
     
     if st.session_state.verdict:
-        st.markdown(f"<div class='judge-box'><h2>⚖️ The Judge's Verdict</h2>{st.session_state.verdict}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='judge-box'><h2>⚖️ The Judge's Verdict</h2>\n\n{st.session_state.verdict}\n\n</div>", unsafe_allow_html=True)
         
     
     if show_tabs and st.session_state.verdict:
