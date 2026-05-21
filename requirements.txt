@@ -6,6 +6,7 @@ langchain-core>=0.3.0
 # Model Providers
 langchain-groq>=0.2.0
 langchain-mistralai>=0.2.0
+langchain-cohere
 
 # UI
 streamlit>=1.35.0
