@@ -1,9 +1,5 @@
 import streamlit as st
-from graph import create_debate_graph  # Import the factory function we built earlier
-
-# ==========================================
-# 1. Page Configuration & Custom CSS
-# ==========================================
+from graph import create_debate_graph  
 st.set_page_config(page_title="AI Debate Arena", layout="wide")
 
 st.markdown("""
@@ -44,7 +40,7 @@ st.markdown("""
     /* Round Header Styling */
     .round-header {
         text-align: center;
-        color: #333;
+        color: #5E3A8FFF;
         padding-top: 15px;
         padding-bottom: 5px;
         border-bottom: 2px solid #ddd;
@@ -54,9 +50,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ==========================================
-# 2. Session State Initialization
-# ==========================================
+
 def reset_debate():
     st.session_state.is_running = False
     st.session_state.debate_finished = False
@@ -68,23 +62,21 @@ def reset_debate():
 if "is_running" not in st.session_state:
     reset_debate()
 
-# ==========================================
-# 3. UI Rendering Logic
-# ==========================================
+
 def render_debate_ui(show_tabs=False):
     """Renders the debate UI from the current session state history."""
     current_round_rendered = 0
     cols = None
     
-    # Reconstruct the back-and-forth from saved messages
+    
     for msg in st.session_state.messages:
-        # Create a new header and split columns for a new round
+        
         if msg["round"] != current_round_rendered:
             current_round_rendered = msg["round"]
             st.markdown(f"<div class='round-header'><h2>Round {current_round_rendered}</h2></div>", unsafe_allow_html=True)
             cols = st.columns(2)
         
-        # Populate the columns
+        
         if msg["role"] == "pro" and cols:
             with cols[0]:
                 st.markdown(f"<div class='pro-box'><h3>🟦 Pro Agent</h3>{msg['content']}</div>", unsafe_allow_html=True)
@@ -92,11 +84,11 @@ def render_debate_ui(show_tabs=False):
             with cols[1]:
                 st.markdown(f"<div class='con-box'><h3>🟨 Con Agent</h3>{msg['content']}</div>", unsafe_allow_html=True)
                 
-    # Render Judge Verdict if available
+    
     if st.session_state.verdict:
         st.markdown(f"<div class='judge-box'><h2>⚖️ The Judge's Verdict</h2>{st.session_state.verdict}</div>", unsafe_allow_html=True)
         
-    # Render Final Transcript Tabs if the debate is fully complete
+    
     if show_tabs and st.session_state.verdict:
         st.markdown("---")
         st.markdown("### 📜 Complete Transcripts")
@@ -113,18 +105,16 @@ def render_debate_ui(show_tabs=False):
         with tab_judge:
             st.markdown(st.session_state.verdict)
 
-# ==========================================
-# 4. Main Application Flow
-# ==========================================
+
 st.title("⚖️ AI Debate Arena")
 st.write("Watch two AI agents debate a topic over 3 rounds, followed by a final judgment.")
 
-# Top Control Bar
+
 col1, col2, col3 = st.columns([6, 2, 2])
 with col1:
     topic = st.text_input("Enter the Debate Topic:", placeholder="e.g., Remote work is more productive than office work")
 with col2:
-    st.write("") # Spacing
+    st.write("") 
     if st.button("🚀 Start Debate", use_container_width=True, type="primary"):
         if topic:
             reset_debate()
@@ -132,16 +122,16 @@ with col2:
         else:
             st.warning("Please enter a topic first.")
 with col3:
-    st.write("") # Spacing
+    st.write("") 
     if st.button("🔄 Clear / Reset", use_container_width=True):
         reset_debate()
         st.rerun()
 
 st.markdown("---")
 
-# --- Execution Phase ---
+
 if st.session_state.is_running and not st.session_state.debate_finished:
-    # Set up LangGraph
+    
     app = create_debate_graph()
     initial_state = {
         "topic": topic,
@@ -152,12 +142,12 @@ if st.session_state.is_running and not st.session_state.debate_finished:
         "verdict": ""
     }
     
-    # Empty container to redraw the UI smoothly during streaming
+    
     ui_container = st.empty()
     
     current_round_tracker = 1
     
-    # Stream the graph execution
+    
     with st.spinner("The debate is live..."):
         for output in app.stream(initial_state):
             for node_name, update_data in output.items():
@@ -171,20 +161,19 @@ if st.session_state.is_running and not st.session_state.debate_finished:
                     response = update_data["con_history"][0]
                     st.session_state.messages.append({"round": current_round_tracker, "role": "con", "content": response})
                     st.session_state.final_con_history.append(response)
-                    current_round_tracker += 1  # Increment local tracker after Con finishes
+                    current_round_tracker += 1  
                     
                 elif node_name == "judge":
                     st.session_state.verdict = update_data["verdict"]
                 
-                # Redraw the UI dynamically inside the empty container
+
                 with ui_container.container():
                     render_debate_ui(show_tabs=False)
                     
-    # Mark as finished and force a clean rerun to display the transcript tabs
+
     st.session_state.debate_finished = True
     st.rerun()
 
-# --- Completed Phase ---
 elif st.session_state.debate_finished:
-    # Render static UI with the post-debate transcript tabs enabled
+  
     render_debate_ui(show_tabs=True)
