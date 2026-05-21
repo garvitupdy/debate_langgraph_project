@@ -2,6 +2,7 @@ from langchain_mistralai import ChatMistralAI
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_groq import ChatGroq
+from langchain_cohere import ChatCohere
 import os
 from dotenv import load_dotenv
 
@@ -12,6 +13,9 @@ def get_mistral_llm():
 
 def get_groq_llm():
     return ChatGroq(model = 'llama-3.1-8b-instant', groq_api_key = os.getenv("GROQ_API_KEY"), temperature= 0.1)
+
+def get_cohere_llm():
+    return ChatCohere(model = 'command-a-reasoning-08-2025', cohore_api_key = os.getenv("COHERE_API_KEY"), temperature= 0.2)
 
 
 def pro_agent(topic : str, current_round : str, pro_history :list, con_history: list)-> str:
@@ -47,7 +51,7 @@ Write your response for {current_round}. Address your opponent's last argument f
     }).strip()
 
 def con_agent(topic : str, current_round : str, pro_history :list, con_history: list)-> str:
-    llm_con = get_mistral_llm()
+    llm_con = get_cohere_llm()
 
     prompt = PromptTemplate.from_template("""
 You are a highly competitive, brilliant debater arguing strictly **AGAINST** the given topic. 
