@@ -611,33 +611,38 @@ def render_debate_ui(show_tabs=False):
 
         if msg["role"] == "pro" and cols:
             with cols[0]:
+                
                 st.markdown(
-                    f"""<div class="debate-card pro-card">
+                    """<div class="pro-card">
                             <div class="card-header">
                                 <div class="icon-dot"></div>
                                 <span class="agent-badge">Pro · Affirmative</span>
                             </div>
-                            <div class="card-body">{msg['content']}</div>
-                        </div>""",
+                            <div class="card-body">""", 
                     unsafe_allow_html=True
                 )
+                
+                st.markdown(msg['content'])
+                
+                st.markdown("</div></div>", unsafe_allow_html=True)
+                
         elif msg["role"] == "con" and cols:
             with cols[1]:
                 st.markdown(
-                    f"""<div class="debate-card con-card">
+                    """<div class="con-card">
                             <div class="card-header">
                                 <div class="icon-dot"></div>
                                 <span class="agent-badge">Con · Opposition</span>
                             </div>
-                            <div class="card-body">{msg['content']}</div>
-                        </div>""",
+                            <div class="card-body">""", 
                     unsafe_allow_html=True
                 )
+                st.markdown(msg['content'])
+                st.markdown("</div></div>", unsafe_allow_html=True)
 
-    
     if st.session_state.verdict:
         st.markdown(
-            f"""<div class="verdict-wrapper">
+            """<div class="verdict-wrapper">
                     <div class="verdict-eyebrow">⚖&nbsp;&nbsp;Final Judgment</div>
                     <div class="judge-card">
                         <div class="judge-header">
@@ -645,13 +650,12 @@ def render_debate_ui(show_tabs=False):
                             <h3 class="judge-title">The Judge's Verdict</h3>
                             <span class="judge-badge">Final Decision</span>
                         </div>
-                        <div class="judge-body">{st.session_state.verdict}</div>
-                    </div>
-                </div>""",
+                        <div class="judge-body">""",
             unsafe_allow_html=True
         )
+        st.markdown(st.session_state.verdict)
+        st.markdown("</div></div></div>", unsafe_allow_html=True)
 
-    
     if show_tabs and st.session_state.verdict:
         st.markdown('<div class="glow-divider"></div>', unsafe_allow_html=True)
         st.markdown('<p class="section-label">📜 &nbsp; Complete Transcripts</p>', unsafe_allow_html=True)
@@ -663,26 +667,30 @@ def render_debate_ui(show_tabs=False):
                 st.markdown(
                     f"""<div class="transcript-item">
                             <div class="transcript-round">Round {i+1}</div>
-                            <div class="transcript-text">{text}</div>
-                        </div>""",
+                            <div class="transcript-text">""",
                     unsafe_allow_html=True
                 )
+                st.markdown(text)
+                st.markdown("</div></div>", unsafe_allow_html=True)
+                
         with tab_con:
             for i, text in enumerate(st.session_state.final_con_history):
                 st.markdown(
                     f"""<div class="transcript-item">
                             <div class="transcript-round">Round {i+1}</div>
-                            <div class="transcript-text">{text}</div>
-                        </div>""",
+                            <div class="transcript-text">""",
                     unsafe_allow_html=True
                 )
+                st.markdown(text)
+                st.markdown("</div></div>", unsafe_allow_html=True)
+                
         with tab_judge:
             st.markdown(
-                f"""<div class="transcript-item">
-                        <div class="transcript-text">{st.session_state.verdict}</div>
-                    </div>""",
+                """<div class="transcript-item"><div class="transcript-text">""",
                 unsafe_allow_html=True
             )
+            st.markdown(st.session_state.verdict)
+            st.markdown("</div></div>", unsafe_allow_html=True)
 
 
 
